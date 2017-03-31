@@ -1,15 +1,66 @@
 {
-  "name": "react-native-emdk",
-  "version": "0.0.1",
+  "_args": [
+    [
+      {
+        "raw": "react-native-emdk@0.0.1",
+        "scope": null,
+        "escapedName": "react-native-emdk",
+        "name": "react-native-emdk",
+        "rawSpec": "0.0.1",
+        "spec": "0.0.1",
+        "type": "version"
+      },
+      "C:\\reactnative\\tc70"
+    ]
+  ],
+  "_from": "react-native-emdk@0.0.1",
+  "_id": "react-native-emdk@0.0.1",
+  "_inCache": true,
+  "_location": "/react-native-emdk",
+  "_nodeVersion": "7.0.0",
+  "_npmOperationalInternal": {
+    "host": "packages-18-east.internal.npmjs.com",
+    "tmp": "tmp/react-native-emdk-0.0.1.tgz_1490021142470_0.8863287747371942"
+  },
+  "_npmUser": {
+    "name": "timhonders",
+    "email": "tim.honders@kega.nl"
+  },
+  "_npmVersion": "3.10.8",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "react-native-emdk@0.0.1",
+    "scope": null,
+    "escapedName": "react-native-emdk",
+    "name": "react-native-emdk",
+    "rawSpec": "0.0.1",
+    "spec": "0.0.1",
+    "type": "version"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/react-native-emdk/-/react-native-emdk-0.0.1.tgz",
+  "_shasum": "cebdee2d628024de66517ebd9f999e02464e6865",
+  "_shrinkwrap": null,
+  "_spec": "react-native-emdk@0.0.1",
+  "_where": "C:\\reactnative\\tc70",
+  "author": {
+    "name": "Sriraman"
+  },
+  "bugs": {
+    "url": "https://github.com/kegaretail/react-native-emdk/issues"
+  },
+  "dependencies": {},
   "description": "EMDK",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "shasum": "cebdee2d628024de66517ebd9f999e02464e6865",
+    "tarball": "https://registry.npmjs.org/react-native-emdk/-/react-native-emdk-0.0.1.tgz"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/kegaretail/react-native-emdk.git"
-  },
+  "gitHead": "a32682d7b49f4da998be99a954d47a07336c7a08",
+  "homepage": "https://github.com/kegaretail/react-native-emdk#readme",
   "keywords": [
     "React",
     "Native",
@@ -19,10 +70,23 @@
     "react-component",
     "react-native"
   ],
-  "author": "Sriraman",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/kegaretail/react-native-emdk/issues"
+  "main": "index.js",
+  "maintainers": [
+    {
+      "name": "timhonders",
+      "email": "tim.honders@kega.nl"
+    }
+  ],
+  "name": "react-native-emdk",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/kegaretail/react-native-emdk.git"
   },
-  "homepage": "https://github.com/kegaretail/react-native-emdk#readme"
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "0.0.2"
 }

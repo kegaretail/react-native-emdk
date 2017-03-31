@@ -12,15 +12,11 @@ android {
 
     }
 
-    buildTypes {
-        release {
-            minifyEnabled true
-        }
-    }
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    provided fileTree(include: ['com.symbol.emdk.jar'], dir: 'libs')
+    compile fileTree(exclude: ['com.symbol.emdk.jar'], dir: 'libs')
     compile "com.android.support:appcompat-v7:23.0.1"
     compile "com.facebook.react:react-native:+"
 }

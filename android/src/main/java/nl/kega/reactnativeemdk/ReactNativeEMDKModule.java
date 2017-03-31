@@ -7,18 +7,24 @@ import java.lang.Exception;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Callback;
 
-class ReactNativeEMDKModule extends ReactContextBaseJavaModule {
+class ReactNativeEMDKModule extends ReactContextBaseJavaModule  {
     
     private ReactApplicationContext context;
 
     public ReactNativeEMDKModule(ReactApplicationContext reactContext) {
         super(reactContext);
+
         this.context = reactContext;
     }
 
