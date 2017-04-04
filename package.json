@@ -11,16 +11,28 @@
         "type": "version"
       },
       "C:\\reactnative\\tc70"
+    ],
+    [
+      {
+        "raw": "react-native-emdk",
+        "scope": null,
+        "escapedName": "react-native-emdk",
+        "name": "react-native-emdk",
+        "rawSpec": "",
+        "spec": "latest",
+        "type": "tag"
+      },
+      "C:\\reactnative\\emdk"
     ]
   ],
-  "_from": "react-native-emdk@0.0.1",
-  "_id": "react-native-emdk@0.0.1",
+  "_from": "react-native-emdk",
+  "_id": "react-native-emdk@0.0.2",
   "_inCache": true,
   "_location": "/react-native-emdk",
   "_nodeVersion": "7.0.0",
   "_npmOperationalInternal": {
     "host": "packages-18-east.internal.npmjs.com",
-    "tmp": "tmp/react-native-emdk-0.0.1.tgz_1490021142470_0.8863287747371942"
+    "tmp": "tmp/react-native-emdk-0.0.2.tgz_1490963692091_0.45799293485470116"
   },
   "_npmUser": {
     "name": "timhonders",
@@ -29,22 +41,23 @@
   "_npmVersion": "3.10.8",
   "_phantomChildren": {},
   "_requested": {
-    "raw": "react-native-emdk@0.0.1",
+    "raw": "react-native-emdk",
     "scope": null,
     "escapedName": "react-native-emdk",
     "name": "react-native-emdk",
-    "rawSpec": "0.0.1",
-    "spec": "0.0.1",
-    "type": "version"
+    "rawSpec": "",
+    "spec": "latest",
+    "type": "tag"
   },
   "_requiredBy": [
+    "#USER",
     "/"
   ],
-  "_resolved": "https://registry.npmjs.org/react-native-emdk/-/react-native-emdk-0.0.1.tgz",
-  "_shasum": "cebdee2d628024de66517ebd9f999e02464e6865",
+  "_resolved": "https://registry.npmjs.org/react-native-emdk/-/react-native-emdk-0.0.2.tgz",
+  "_shasum": "eb4459c708172fc1adf935ad14849f7938d2e15b",
   "_shrinkwrap": null,
-  "_spec": "react-native-emdk@0.0.1",
-  "_where": "C:\\reactnative\\tc70",
+  "_spec": "react-native-emdk",
+  "_where": "C:\\reactnative\\emdk",
   "author": {
     "name": "Sriraman"
   },
@@ -56,8 +69,8 @@
   "devDependencies": {},
   "directories": {},
   "dist": {
-    "shasum": "cebdee2d628024de66517ebd9f999e02464e6865",
-    "tarball": "https://registry.npmjs.org/react-native-emdk/-/react-native-emdk-0.0.1.tgz"
+    "shasum": "eb4459c708172fc1adf935ad14849f7938d2e15b",
+    "tarball": "https://registry.npmjs.org/react-native-emdk/-/react-native-emdk-0.0.2.tgz"
   },
   "gitHead": "a32682d7b49f4da998be99a954d47a07336c7a08",
   "homepage": "https://github.com/kegaretail/react-native-emdk#readme",
@@ -88,5 +101,5 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "version": "0.0.2"
+  "version": "0.0.3"
 }

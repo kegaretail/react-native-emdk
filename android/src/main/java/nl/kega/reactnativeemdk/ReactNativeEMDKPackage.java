@@ -18,7 +18,7 @@ public class ReactNativeEMDKPackage implements ReactPackage {
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
-        modules.add(new ReactNativeEMDKModule(reactContext));
+        //modules.add(new ReactNativeEMDKModule(reactContext));
         modules.add(new BarcodeScanner(reactContext));
         return modules;
     }

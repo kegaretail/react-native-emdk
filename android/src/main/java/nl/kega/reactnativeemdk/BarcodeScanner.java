@@ -4,6 +4,9 @@ import android.util.Log;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import java.util.Arrays;
+import java.lang.reflect.*;
+
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
@@ -18,6 +21,7 @@ import com.symbol.emdk.barcode.BarcodeManager.ScannerConnectionListener;
 import com.symbol.emdk.barcode.ScanDataCollection;
 import com.symbol.emdk.barcode.Scanner;
 import com.symbol.emdk.barcode.ScannerConfig;
+import com.symbol.emdk.barcode.ScannerConfig.DecoderParams;
 import com.symbol.emdk.barcode.ScannerException;
 import com.symbol.emdk.barcode.ScannerInfo;
 import com.symbol.emdk.barcode.ScannerResults;
@@ -36,6 +40,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -53,15 +58,20 @@ public class BarcodeScanner extends ReactContextBaseJavaModule implements EMDKLi
     private BarcodeManager barcodeManager = null;
     private Scanner scanner = null;
     private List<ScannerInfo> deviceList = null;
-    private ScannerConfig config = null;
+    private ScannerConfig scanner_config = null;
     private Boolean reading = false;
+    private ReadableMap config = null;
+
+
 
     public BarcodeScanner(ReactApplicationContext reactContext) {
         super(reactContext);
 
         this.context = reactContext;
-
         this.context.addLifecycleEventListener(this);
+
+        Log.v("[BarcodeScanner]", "BarcodeScanner");
+
     }
 
     private void initScanner() {
@@ -113,12 +123,9 @@ public class BarcodeScanner extends ReactContextBaseJavaModule implements EMDKLi
 
     @Override
     public void onOpened(EMDKManager emdkManager) {
-        Log.v("[BarcodeScanner]", "onOpened");
-
         this.emdkManager = emdkManager;
 
         this.initScanner();
-
     }
 
     @Override
@@ -128,7 +135,7 @@ public class BarcodeScanner extends ReactContextBaseJavaModule implements EMDKLi
 
     @Override
     public void onData(ScanDataCollection scanDataCollection) {
-        
+                
         if ((scanDataCollection != null) && (scanDataCollection.getResult() == ScannerResults.SUCCESS)) {
             ArrayList <ScanData> scanData = scanDataCollection.getScanData();
 
@@ -146,9 +153,8 @@ public class BarcodeScanner extends ReactContextBaseJavaModule implements EMDKLi
             this.context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("BarcodesEvent", barcodes);
 
         }
-     
     }
-
+    
     @Override
     public void onStatus(StatusData statusData) {
     
@@ -169,7 +175,7 @@ public class BarcodeScanner extends ReactContextBaseJavaModule implements EMDKLi
                         e.printStackTrace();
                     }
 
-                    if (this.scanner != null){
+                    if (this.scanner != null && this.reading){
                         this.scanner.read();
                     }
                     
@@ -201,14 +207,13 @@ public class BarcodeScanner extends ReactContextBaseJavaModule implements EMDKLi
         }
 
         this.context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("StatusEvent", event);
-    
     }
-    
+
     @Override
     public String getName() {
         return "BarcodeScanner";
     }
-
+    
     @Override
     public void onHostResume() {
 
@@ -216,7 +221,7 @@ public class BarcodeScanner extends ReactContextBaseJavaModule implements EMDKLi
             this.initScanner();
 
             if (this.reading){
-                this.read();
+                this.read(this.config);
             }
         }
     
@@ -269,11 +274,13 @@ public class BarcodeScanner extends ReactContextBaseJavaModule implements EMDKLi
     }
 
     @ReactMethod
-    public void read() { //ReadableMap condig
+    public void read(ReadableMap condig) {
 
         Log.v("[BarcodeScanner]", "Read");
 
         try {
+
+            this.config = condig;
 
             if (this.scanner.isReadPending()){
                 this.scanner.cancelRead();
@@ -281,20 +288,46 @@ public class BarcodeScanner extends ReactContextBaseJavaModule implements EMDKLi
 
             this.scanner.triggerType = TriggerType.HARD;
 
-            Log.v("[BarcodeScanner]", "Set trigger");
+            this.scanner_config = scanner.getConfig();
 
-            this.config = scanner.getConfig();
-            this.config.decoderParams.ean8.enabled = true;
-            this.config.decoderParams.ean13.enabled = true;
-            this.config.decoderParams.code39.enabled = true;
-            this.config.decoderParams.code128.enabled = true;
+            if (this.config.hasKey("type")){
+                ReadableArray types = this.config.getArray("type");
+                for (int i = 0; i < types.size(); i++) {
 
-            //config.readerParams.readerSpecific.cameraSpecific.illuminationMode = IlluminationMode.OFF;
-            this.config.scanParams.decodeHapticFeedback = true;
+                    switch (types.getString(i).toLowerCase()) {
+                        case "ean8":  
+                            this.scanner_config.decoderParams.ean8.enabled = true;
+                        break;
+                        case "ean13":  
+                            this.scanner_config.decoderParams.ean13.enabled = true;
+                        break;
+                        case "codabar":  
+                            this.scanner_config.decoderParams.codaBar.enabled = true;
+                        break;
+                        case "code11":  
+                            this.scanner_config.decoderParams.code11.enabled = true;
+                        break;
+                        case "code39":  
+                            this.scanner_config.decoderParams.code39.enabled = true;
+                        break;
+                        case "code128":  
+                            this.scanner_config.decoderParams.code128.enabled = true;
+                        break;
+                        case "qrcode":  
+                            this.scanner_config.decoderParams.qrCode.enabled = true;
+                        break;
+                        case "dutchpostal":  
+                            this.scanner_config.decoderParams.dutchPostal.enabled = true;
+                        break;
+                        
+                    }
+                    
+                }
+            }
 
-            this.scanner.setConfig(this.config);
+            this.scanner_config.scanParams.decodeHapticFeedback = true;
 
-            Log.v("[BarcodeScanner]", "Read triggerType: " + this.scanner.triggerType);
+            this.scanner.setConfig(this.scanner_config);
 
             this.scanner.read();
 
@@ -303,6 +336,79 @@ public class BarcodeScanner extends ReactContextBaseJavaModule implements EMDKLi
             Log.e("[BarcodeScanner]", "Read error: " + e);
         }
 
+    }
+
+    @ReactMethod
+    public void scan(ReadableMap condig) {
+
+        Log.v("[BarcodeScanner]", "Scan");
+
+        try {
+
+            this.config = condig;
+
+            if (this.scanner.isReadPending()){
+                this.scanner.cancelRead();
+            }
+
+            this.scanner.triggerType = TriggerType.SOFT_ALWAYS;
+
+             this.scanner_config = scanner.getConfig();
+
+            if (this.config.hasKey("type")){
+                ReadableArray types = this.config.getArray("type");
+                for (int i = 0; i < types.size(); i++) {
+
+                    switch (types.getString(i).toLowerCase()) {
+                        case "ean8":  
+                            this.scanner_config.decoderParams.ean8.enabled = true;
+                        break;
+                        case "ean13":  
+                            this.scanner_config.decoderParams.ean13.enabled = true;
+                        break;
+                        case "codabar":  
+                            this.scanner_config.decoderParams.codaBar.enabled = true;
+                        break;
+                        case "code11":  
+                            this.scanner_config.decoderParams.code11.enabled = true;
+                        break;
+                        case "code39":  
+                            this.scanner_config.decoderParams.code39.enabled = true;
+                        break;
+                        case "code128":  
+                            this.scanner_config.decoderParams.code128.enabled = true;
+                        break;
+                        case "qrcode":  
+                            this.scanner_config.decoderParams.qrCode.enabled = true;
+                        break;
+                        case "dutchpostal":  
+                            this.scanner_config.decoderParams.dutchPostal.enabled = true;
+                        break;
+                        
+                    }
+                    
+                }
+            }
+           
+            this.scanner_config.scanParams.decodeHapticFeedback = true;
+
+            this.scanner.setConfig(this.scanner_config);
+
+            this.scanner.read();
+        } catch (ScannerException e) {
+            Log.e("[BarcodeScanner]", "Read error: " + e);
+        }
+
+    }
+
+    @ReactMethod
+    public void cancel() {
+        try {
+            this.scanner.cancelRead();
+            this.reading = false;
+        } catch (ScannerException e) {
+            Log.e("[BarcodeScanner]", "Cancel error: " + e);
+        }
     }
 
     @ReactMethod

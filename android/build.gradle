@@ -16,7 +16,7 @@ android {
 
 dependencies {
     provided fileTree(include: ['com.symbol.emdk.jar'], dir: 'libs')
-    compile fileTree(exclude: ['com.symbol.emdk.jar'], dir: 'libs')
+    compile fileTree(exclude: ['com.symbol.emdk.jar'], include: ["*.jar"], dir: 'libs')
     compile "com.android.support:appcompat-v7:23.0.1"
     compile "com.facebook.react:react-native:+"
 }
