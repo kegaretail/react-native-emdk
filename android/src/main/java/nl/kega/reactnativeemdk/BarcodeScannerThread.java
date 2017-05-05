@@ -1,14 +1,13 @@
 package nl.kega.reactnativeemdk;
 
 import android.util.Log;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 
 import java.util.Arrays;
 import java.lang.reflect.*;
 
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import com.symbol.emdk.EMDKManager;
 import com.symbol.emdk.EMDKResults;
@@ -32,49 +31,43 @@ import com.symbol.emdk.barcode.Scanner.TriggerType;
 import com.symbol.emdk.barcode.StatusData.ScannerStates;
 import com.symbol.emdk.barcode.StatusData;
 
-import com.facebook.react.modules.core.DeviceEventManagerModule;
-
-import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.LifecycleEventListener;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+public class BarcodeScannerThread extends Thread implements EMDKListener, DataListener, StatusListener {
 
-public class BarcodeScanner extends ReactContextBaseJavaModule implements EMDKListener, DataListener, StatusListener, LifecycleEventListener {
-    
     private ReactApplicationContext context;
 
-    private EMDKResults results = null;
     private EMDKManager emdkManager = null;
     private BarcodeManager barcodeManager = null;
     private Scanner scanner = null;
-    private List<ScannerInfo> deviceList = null;
     private ScannerConfig scanner_config = null;
     private Boolean reading = false;
     private ReadableMap config = null;
 
+    public BarcodeScannerThread(ReactApplicationContext context) {
+        this.context = context;
+    }
 
+    public void run() {
+        /*
+        EMDKResults results = EMDKManager.getEMDKManager(this.context, this);
+        if (results.statusCode != EMDKResults.STATUS_CODE.SUCCESS) {
 
-    public BarcodeScanner(ReactApplicationContext reactContext) {
-        super(reactContext);
+        }else{
 
-        this.context = reactContext;
-        this.context.addLifecycleEventListener(this);
-
-        Log.v("[BarcodeScanner]", "BarcodeScanner");
-
+        }
+        */
     }
 
     private void initScanner() {
+
         try {
 
             Log.v("[BarcodeScanner]", "initScanner: " + this.emdkManager);
@@ -93,7 +86,7 @@ public class BarcodeScanner extends ReactContextBaseJavaModule implements EMDKLi
                 WritableMap event = Arguments.createMap();
                 event.putString("StatusEvent", "opened");
 
-                this.context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("StatusEvent", event);
+                this.dispatchEvent("StatusEvent", event);
             }
 
         } catch (ScannerException e) {
@@ -116,7 +109,7 @@ public class BarcodeScanner extends ReactContextBaseJavaModule implements EMDKLi
                 WritableMap event = Arguments.createMap();
                 event.putString("StatusEvent", "destroyed");
 
-                this.context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("StatusEvent", event);
+                this.dispatchEvent("StatusEvent", event);
 
             } catch (ScannerException e) {
 				
@@ -131,17 +124,17 @@ public class BarcodeScanner extends ReactContextBaseJavaModule implements EMDKLi
         this.emdkManager = emdkManager;
 
         this.initScanner();
-    }
-
-    @Override
-    public void onClosed() {
         
     }
 
     @Override
+    public void onClosed() {
+
+    }
+
+    @Override
     public void onData(ScanDataCollection scanDataCollection) {
-                
-        if ((scanDataCollection != null) && (scanDataCollection.getResult() == ScannerResults.SUCCESS)) {
+     if ((scanDataCollection != null) && (scanDataCollection.getResult() == ScannerResults.SUCCESS)) {
             ArrayList <ScanData> scanData = scanDataCollection.getScanData();
 
              WritableArray barcodes = Arguments.createArray();
@@ -150,16 +143,16 @@ public class BarcodeScanner extends ReactContextBaseJavaModule implements EMDKLi
                 String dataString = data.getData();
                 Log.v("[BarcodeScanner]", "onData: " + dataString);
                 
-                this.context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("BarcodeEvent", dataString);
+                this.dispatchEvent("BarcodeEvent", dataString);
 
                 barcodes.pushString(dataString);
             }
-
-            this.context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("BarcodesEvent", barcodes);
+            
+            this.dispatchEvent("BarcodeEvent", barcodes);
 
         }
     }
-    
+
     @Override
     public void onStatus(StatusData statusData) {
     
@@ -210,16 +203,14 @@ public class BarcodeScanner extends ReactContextBaseJavaModule implements EMDKLi
             default:
                 break;
         }
+        this.dispatchEvent("StatusEvent", event);
 
-        this.context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("StatusEvent", event);
-    }
-
-    @Override
-    public String getName() {
-        return "BarcodeScanner";
     }
     
-    @Override
+    public void dispatchEvent(String name, WritableMap data) {}
+    public void dispatchEvent(String name, String data) {}
+    public void dispatchEvent(String name, WritableArray data) {}
+
     public void onHostResume() {
 
         if (this.emdkManager != null){
@@ -234,7 +225,6 @@ public class BarcodeScanner extends ReactContextBaseJavaModule implements EMDKLi
     
     }
 
-    @Override
     public void onHostPause() {
 
         this.destroyScanner();
@@ -249,7 +239,6 @@ public class BarcodeScanner extends ReactContextBaseJavaModule implements EMDKLi
 
     }
 
-    @Override
     public void onHostDestroy() {
      
         this.destroyScanner();
@@ -264,7 +253,6 @@ public class BarcodeScanner extends ReactContextBaseJavaModule implements EMDKLi
       
     }
 
-    @Override
     public void onCatalystInstanceDestroy() {
         this.destroyScanner();
 
@@ -277,22 +265,17 @@ public class BarcodeScanner extends ReactContextBaseJavaModule implements EMDKLi
         }
     }
 
-    @ReactMethod
     public void init() {
 
-        if (this.results == null) {
-            this.results = EMDKManager.getEMDKManager(this.context.getApplicationContext(), this);
-            if (this.results.statusCode != EMDKResults.STATUS_CODE.SUCCESS) {
-                Log.e("[BarcodeScanner]", "MDKManager object request failed!");
-            }else{
-                Log.v("[BarcodeScanner]", "MDKManager object request SUCCESS!");
-            }
-        
+        EMDKResults results = EMDKManager.getEMDKManager(this.context.getApplicationContext(), this);
+        if (results.statusCode != EMDKResults.STATUS_CODE.SUCCESS) {
+            Log.e("[BarcodeScanner]", "MDKManager object request failed!");
+        }else{
+            Log.v("[BarcodeScanner]", "MDKManager object request SUCCESS!");
         }
 
     }
 
-    @ReactMethod
     public void read(ReadableMap condig) {
 
         Log.v("[BarcodeScanner]", "Read");
@@ -373,7 +356,6 @@ public class BarcodeScanner extends ReactContextBaseJavaModule implements EMDKLi
 
     }
 
-    @ReactMethod
     public void scan(ReadableMap condig) {
 
         Log.v("[BarcodeScanner]", "Scan");
@@ -436,7 +418,6 @@ public class BarcodeScanner extends ReactContextBaseJavaModule implements EMDKLi
 
     }
 
-    @ReactMethod
     public void cancel() {
         try {
             if(this.scanner != null){
@@ -448,7 +429,6 @@ public class BarcodeScanner extends ReactContextBaseJavaModule implements EMDKLi
         }
     }
 
-    @ReactMethod
     public void disable() {
         try {
             if(this.scanner != null){
@@ -459,7 +439,6 @@ public class BarcodeScanner extends ReactContextBaseJavaModule implements EMDKLi
         }
     }
 
-    @ReactMethod
     public void enable() {
         try {
             if(this.scanner != null){
