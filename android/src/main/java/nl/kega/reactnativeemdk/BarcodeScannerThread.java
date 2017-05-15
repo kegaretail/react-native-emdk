@@ -278,8 +278,6 @@ public class BarcodeScannerThread extends Thread implements EMDKListener, DataLi
 
     public void read(ReadableMap condig) {
 
-        Log.v("[BarcodeScanner]", "Read");
-
         try {
 
             this.config = condig;
@@ -345,11 +343,13 @@ public class BarcodeScannerThread extends Thread implements EMDKListener, DataLi
                 this.scanner_config.scanParams.decodeHapticFeedback = true;
 
                 this.scanner.setConfig(this.scanner_config);
+                
+                this.reading = true;
 
                 this.scanner.read();
 
-                this.reading = true;
             }
+
         } catch (ScannerException e) {
             Log.e("[BarcodeScanner]", "Read error: " + e);
         }
@@ -357,8 +357,6 @@ public class BarcodeScannerThread extends Thread implements EMDKListener, DataLi
     }
 
     public void scan(ReadableMap condig) {
-
-        Log.v("[BarcodeScanner]", "Scan");
 
         try {
 
@@ -405,6 +403,16 @@ public class BarcodeScannerThread extends Thread implements EMDKListener, DataLi
                     }
                     
                 }
+            }else{
+                this.scanner_config.decoderParams.ean8.enabled = true;
+                this.scanner_config.decoderParams.ean13.enabled = true;
+                this.scanner_config.decoderParams.codaBar.enabled = true;
+                this.scanner_config.decoderParams.code11.enabled = true;
+                this.scanner_config.decoderParams.code39.enabled = true;
+                this.scanner_config.decoderParams.code93.enabled = true;
+                this.scanner_config.decoderParams.code128.enabled = true;
+                this.scanner_config.decoderParams.qrCode.enabled = true;
+                this.scanner_config.decoderParams.dutchPostal.enabled = true;
             }
            
             this.scanner_config.scanParams.decodeHapticFeedback = true;

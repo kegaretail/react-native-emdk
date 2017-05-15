@@ -280,6 +280,8 @@ public class BarcodeScanner extends ReactContextBaseJavaModule implements EMDKLi
     @ReactMethod
     public void init() {
 
+        Log.v("[BarcodeScanner]", "init ----------------------------------- " + this.results);
+
         if (this.results == null) {
             this.results = EMDKManager.getEMDKManager(this.context.getApplicationContext(), this);
             if (this.results.statusCode != EMDKResults.STATUS_CODE.SUCCESS) {
@@ -295,7 +297,8 @@ public class BarcodeScanner extends ReactContextBaseJavaModule implements EMDKLi
     @ReactMethod
     public void read(ReadableMap condig) {
 
-        Log.v("[BarcodeScanner]", "Read");
+        Log.v("[BarcodeScanner]", "Read " + this.scanner);
+        Log.v("[BarcodeScanner]", "Read " + this.reading);
 
         try {
 
@@ -362,10 +365,11 @@ public class BarcodeScanner extends ReactContextBaseJavaModule implements EMDKLi
                 this.scanner_config.scanParams.decodeHapticFeedback = true;
 
                 this.scanner.setConfig(this.scanner_config);
+                
+                this.reading = true;
 
                 this.scanner.read();
-
-                this.reading = true;
+ 
             }
         } catch (ScannerException e) {
             Log.e("[BarcodeScanner]", "Read error: " + e);
@@ -388,7 +392,7 @@ public class BarcodeScanner extends ReactContextBaseJavaModule implements EMDKLi
 
             this.scanner.triggerType = TriggerType.SOFT_ALWAYS;
 
-             this.scanner_config = scanner.getConfig();
+            this.scanner_config = scanner.getConfig();
 
             if (this.config.hasKey("type")){
                 ReadableArray types = this.config.getArray("type");
@@ -423,8 +427,18 @@ public class BarcodeScanner extends ReactContextBaseJavaModule implements EMDKLi
                     }
                     
                 }
+            }else{
+                this.scanner_config.decoderParams.ean8.enabled = true;
+                this.scanner_config.decoderParams.ean13.enabled = true;
+                this.scanner_config.decoderParams.codaBar.enabled = true;
+                this.scanner_config.decoderParams.code11.enabled = true;
+                this.scanner_config.decoderParams.code39.enabled = true;
+                this.scanner_config.decoderParams.code93.enabled = true;
+                this.scanner_config.decoderParams.code128.enabled = true;
+                this.scanner_config.decoderParams.qrCode.enabled = true;
+                this.scanner_config.decoderParams.dutchPostal.enabled = true;
             }
-           
+        
             this.scanner_config.scanParams.decodeHapticFeedback = true;
 
             this.scanner.setConfig(this.scanner_config);
