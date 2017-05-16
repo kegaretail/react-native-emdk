@@ -25,7 +25,6 @@ export class BarcodeScanner {
     }
 
     handleStatusEvent(event) {
-        console.log("[BarcodeSCanner] event ", event);
         if (event.StatusEvent == 'opened'){
             this.opened = true;
             if (this.start_reading){

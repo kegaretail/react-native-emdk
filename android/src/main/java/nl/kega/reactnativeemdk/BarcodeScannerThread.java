@@ -148,7 +148,7 @@ public class BarcodeScannerThread extends Thread implements EMDKListener, DataLi
                 barcodes.pushString(dataString);
             }
             
-            this.dispatchEvent("BarcodeEvent", barcodes);
+            this.dispatchEvent("BarcodesEvent", barcodes);
 
         }
     }
