@@ -293,6 +293,17 @@ public class BarcodeScannerThread extends Thread implements EMDKListener, DataLi
                 this.scanner_config = scanner.getConfig();
 
                 if (this.config.hasKey("type")){
+                    
+                    this.scanner_config.decoderParams.ean8.enabled = false;
+                    this.scanner_config.decoderParams.ean13.enabled = false;
+                    this.scanner_config.decoderParams.codaBar.enabled = false;
+                    this.scanner_config.decoderParams.code11.enabled = false;
+                    this.scanner_config.decoderParams.code39.enabled = false;
+                    this.scanner_config.decoderParams.code93.enabled = false;
+                    this.scanner_config.decoderParams.code128.enabled = false;
+                    this.scanner_config.decoderParams.qrCode.enabled = false;
+                    this.scanner_config.decoderParams.dutchPostal.enabled = false;
+
                     ReadableArray types = this.config.getArray("type");
                     for (int i = 0; i < types.size(); i++) {
 
@@ -371,6 +382,16 @@ public class BarcodeScannerThread extends Thread implements EMDKListener, DataLi
              this.scanner_config = scanner.getConfig();
 
             if (this.config.hasKey("type")){
+                this.scanner_config.decoderParams.ean8.enabled = false;
+                this.scanner_config.decoderParams.ean13.enabled = false;
+                this.scanner_config.decoderParams.codaBar.enabled = false;
+                this.scanner_config.decoderParams.code11.enabled = false;
+                this.scanner_config.decoderParams.code39.enabled = false;
+                this.scanner_config.decoderParams.code93.enabled = false;
+                this.scanner_config.decoderParams.code128.enabled = false;
+                this.scanner_config.decoderParams.qrCode.enabled = false;
+                this.scanner_config.decoderParams.dutchPostal.enabled = false;
+
                 ReadableArray types = this.config.getArray("type");
                 for (int i = 0; i < types.size(); i++) {
 
