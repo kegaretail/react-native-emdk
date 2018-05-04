@@ -4,6 +4,7 @@ import android.util.Log;
 
 import java.util.Arrays;
 import java.lang.reflect.*;
+import java.lang.NullPointerException;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -91,6 +92,8 @@ public class BarcodeScannerThread extends Thread implements EMDKListener, DataLi
 
         } catch (ScannerException e) {
             Log.e("[BarcodeScanner]", "initScanner error: " + e);
+        } catch (NullPointerException e) {
+        
         }
     }
 
@@ -113,7 +116,9 @@ public class BarcodeScannerThread extends Thread implements EMDKListener, DataLi
 
             } catch (ScannerException e) {
 				
-			}
+			} catch (NullPointerException e) {
+        
+            }
 
         }
 
@@ -363,6 +368,8 @@ public class BarcodeScannerThread extends Thread implements EMDKListener, DataLi
 
         } catch (ScannerException e) {
             Log.e("[BarcodeScanner]", "Read error: " + e);
+        } catch (NullPointerException e) {
+        
         }
 
     }
