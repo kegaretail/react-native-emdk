@@ -286,6 +286,7 @@ public class BarcodeScannerThread extends Thread implements EMDKListener, DataLi
         try {
 
             this.config = condig;
+            this.reading = true;
 
             if (this.scanner != null) {
 
@@ -359,8 +360,6 @@ public class BarcodeScannerThread extends Thread implements EMDKListener, DataLi
                 this.scanner_config.scanParams.decodeHapticFeedback = true;
 
                 this.scanner.setConfig(this.scanner_config);
-                
-                this.reading = true;
 
                 this.scanner.read();
 
