@@ -274,9 +274,9 @@ public class BarcodeScannerThread extends Thread implements EMDKListener, DataLi
 
         EMDKResults results = EMDKManager.getEMDKManager(this.context.getApplicationContext(), this);
         if (results.statusCode != EMDKResults.STATUS_CODE.SUCCESS) {
-            Log.e("[BarcodeScanner]", "MDKManager object request failed!");
+            Log.e("[BarcodeScanner]", "EMDKManager object request failed!");
         }else{
-            Log.v("[BarcodeScanner]", "MDKManager object request SUCCESS!");
+            Log.v("[BarcodeScanner]", "EMDKManager object request SUCCESS!");
         }
 
     }
@@ -384,6 +384,7 @@ public class BarcodeScannerThread extends Thread implements EMDKListener, DataLi
             }
 
             this.scanner.triggerType = TriggerType.SOFT_ALWAYS;
+            //this.scanner.triggerType = TriggerType.SOFT_ONCE;
 
              this.scanner_config = scanner.getConfig();
 
