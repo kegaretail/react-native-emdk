@@ -1,9 +1,8 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion = 28
-    buildToolsVersion = "28.0.3"
-
+    compileSdkVersion 23
+    
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 28
@@ -15,8 +14,8 @@ android {
 }
 
 dependencies {
-    provided fileTree(include: ['com.symbol.emdk.jar'], dir: 'libs')
-    compile fileTree(exclude: ['com.symbol.emdk.jar'], include: ["*.jar"], dir: 'libs')
-    compile "com.android.support:appcompat-v7:23.0.1"
-    compile "com.facebook.react:react-native:+"
+    compileOnly fileTree(include: ['com.symbol.emdk.jar'], dir: 'libs')
+    api fileTree(exclude: ['com.symbol.emdk.jar'], include: ["*.jar"], dir: 'libs')
+    implementation "com.android.support:appcompat-v7:23.0.1"
+    implementation "com.facebook.react:react-native:+"
 }
