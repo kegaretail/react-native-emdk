@@ -219,7 +219,10 @@ public class BarcodeScannerThread extends Thread implements EMDKListener, DataLi
     public void onHostResume() {
 
         if (this.emdkManager != null){
-            this.initScanner();
+            
+            if (this.scanner == null) {
+                this.initScanner();
+            }
 
             if (this.reading){
                 this.read(this.config);
