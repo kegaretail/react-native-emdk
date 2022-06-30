@@ -79,6 +79,10 @@ public class BarcodeScannerThread extends Thread implements EMDKListener, DataLi
 
             if (this.barcodeManager != null){
 
+                if (this.scanner != null) {
+                    this.destroyScanner();
+                }
+
                 this.scanner = barcodeManager.getDevice(DeviceIdentifier.DEFAULT);
                 this.scanner.addDataListener(this);
                 this.scanner.addStatusListener(this);
@@ -218,7 +222,7 @@ public class BarcodeScannerThread extends Thread implements EMDKListener, DataLi
 
     public void onHostResume() {
 
-        if (this.emdkManager != null){
+        if (this.emdkManager != null && this.barcodeManager == null && this.scanner == null){
             
             if (this.scanner == null) {
                 this.initScanner();
