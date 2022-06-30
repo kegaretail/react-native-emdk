@@ -26,7 +26,6 @@
     ]
   ],
   "_from": "react-native-emdk",
-  "_id": "react-native-emdk@0.0.2",
   "_inCache": true,
   "_location": "/react-native-emdk",
   "_nodeVersion": "7.0.0",
@@ -101,5 +100,5 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "version": "0.0.13"
+  "version": "0.0.14"
 }
