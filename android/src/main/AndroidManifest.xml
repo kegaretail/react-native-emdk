@@ -1,3 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="nl.kega.reactnativeemdk">
+          package="com.reactnativeemdk">
+
+    <uses-permission android:name="com.symbol.emdk.permission.EMDK" />   
+
 </manifest>

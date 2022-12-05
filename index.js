@@ -1,5 +1,5 @@
-import BarcodeScanner from './lib/BarcodeScanner';
-export default BarcodeScanner;
+import Cradle from './lib/Cradle';
 
-import { BarcodeScannerEvent } from './lib/BarcodeScannerEvent';
-export { BarcodeScannerEvent };
+export {
+  Cradle
+}
