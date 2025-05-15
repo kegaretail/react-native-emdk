@@ -1,0 +1,30 @@
+{
+    "description": "react-native-emdk",
+    "directories": {},
+    "dist": {},
+    "gitHead": "",
+    "homepage": "https://github.com/kegaretail/react-native-emdk",
+    "keywords": [],
+    "license": "ISC",
+    "main": "./index.js",
+    "maintainers": [
+        {
+            "name": "timhonders",
+            "email": "tim.honders@kega.nl"
+        }
+    ],
+    "name": "react-native-emdk",
+    "readme": "ERROR: No README data found!",
+    "repository": {
+        "type": "git",
+        "url": "git+ssh://git@github.com/kegaretail/react-native-emdk.git"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "version": "2.0.0",
+    "peerDependencies": {
+        "react": "*",
+        "react-native": "*"
+    }
+}
