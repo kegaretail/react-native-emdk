@@ -230,7 +230,7 @@ public class BarcodeModule extends ReactContextBaseJavaModule implements Lifecyc
 	}
 
 	@ReactMethod
-    public void cancel() {
+    public void release() {
 		log("cancel");
 		reading = false;
 
