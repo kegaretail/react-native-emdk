@@ -16,6 +16,8 @@ yarn-error.log
 local.properties
 android.iml
 
+android/build/
+
 # Turborepo
 .turbo/
 
