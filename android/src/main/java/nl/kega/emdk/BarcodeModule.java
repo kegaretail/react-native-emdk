@@ -261,13 +261,26 @@ public class BarcodeModule extends ReactContextBaseJavaModule implements Lifecyc
 	}
 
 	@ReactMethod
+	public void cancelRead() {
+        try {
+            if(scanner != null){
+                scanner.cancelRead();
+				reading = false;
+            }
+        } catch (ScannerException e) {
+            Log.e("[BarcodeScanner]", "Cancel error: " + e);
+        }
+    }
+
+	@ReactMethod
 	public void disable() {
         try {
             if(scanner != null){
                 scanner.disable();
+				
             }
         } catch (ScannerException e) {
-            Log.e("[BarcodeScanner]", "Read error: " + e);
+            Log.e("[BarcodeScanner]", "disable error: " + e);
         }
     }
 
@@ -278,7 +291,7 @@ public class BarcodeModule extends ReactContextBaseJavaModule implements Lifecyc
                 scanner.enable();
             }
         } catch (ScannerException e) {
-            Log.e("[BarcodeScanner]", "Read error: " + e);
+            Log.e("[BarcodeScanner]", "Enable error: " + e);
         }
     }
 
