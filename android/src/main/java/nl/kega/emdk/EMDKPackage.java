@@ -1,6 +1,7 @@
 package nl.kega.emdk;
 
 import android.util.Log;
+import android.os.Bundle;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.JavaScriptModule;
@@ -17,7 +18,9 @@ public class EMDKPackage implements ReactPackage {
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
-        modules.add(new BarcodeModule(reactContext));
+        if(android.os.Build.MANUFACTURER.contains("Zebra Technologies") || android.os.Build.MANUFACTURER.contains("Motorola Solutions") ) {
+            modules.add(new BarcodeModule(reactContext));
+        }
         return modules;
     }
 

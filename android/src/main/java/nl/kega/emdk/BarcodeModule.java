@@ -59,17 +59,16 @@ public class BarcodeModule extends ReactContextBaseJavaModule implements Lifecyc
         super(reactContext);
         reactContext.addLifecycleEventListener(this);
 		context = reactContext;
-
-		if(android.os.Build.MANUFACTURER.contains("Zebra Technologies") || android.os.Build.MANUFACTURER.contains("Motorola Solutions") ) {
-			try {
-				EMDKResults results = EMDKManager.getEMDKManager(context, this);
-				if (results.statusCode != EMDKResults.STATUS_CODE.SUCCESS) {
-					log("Status: " + "EMDKManager object request failed!");
-				}
-			} catch (Exception exception) {
-				log("Scanner is not present");
+		
+		try {
+			EMDKResults results = EMDKManager.getEMDKManager(context, this);
+			if (results.statusCode != EMDKResults.STATUS_CODE.SUCCESS) {
+				log("Status: " + "EMDKManager object request failed!");
 			}
+		} catch (Exception exception) {
+			log("Scanner is not present");
 		}
+		
     }
 
 	private ScannerConfig createScannerConfig(ReadableMap config) {
