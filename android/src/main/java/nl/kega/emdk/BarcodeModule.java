@@ -50,6 +50,7 @@ public class BarcodeModule extends ReactContextBaseJavaModule implements Lifecyc
 	private BarcodeManager barcodeManager = null;
 	private Scanner scanner = null;
 	private Boolean reading = false;
+	private Boolean destroying = false;
 
 	private ReadableMap userConfig = null;
 
@@ -204,7 +205,7 @@ public class BarcodeModule extends ReactContextBaseJavaModule implements Lifecyc
 	@ReactMethod
     public void read(ReadableMap config) {
 		try {
-			log("reading... " + reading);
+			log("reading... " + scanner);
 
 			if (scanner != null) {
 				log("isReadPending " + scanner.isReadPending());
@@ -318,7 +319,7 @@ public class BarcodeModule extends ReactContextBaseJavaModule implements Lifecyc
 
 	@Override
 	public void onHostResume() {
-		log("onHostResume");
+		log("onHostResume " + emdkManager);
 		if (emdkManager != null) {
 			initBarcodeManager();
 			initScanner();
@@ -360,6 +361,8 @@ public class BarcodeModule extends ReactContextBaseJavaModule implements Lifecyc
 		this.emdkManager = emdkManager;
 
 		initBarcodeManager();
+
+		initScanner();
     }
 
 	@Override
@@ -412,9 +415,11 @@ public class BarcodeModule extends ReactContextBaseJavaModule implements Lifecyc
                         Log.e("[BarcodeModule]", "onStatus error: " + e);
                         e.printStackTrace();
                     }
-	
-                 	if (scanner != null && reading){
-	
+
+					log("onStatus reading: " + reading + " destroying: " + destroying);
+
+                 	if (scanner != null && reading && destroying == false) {
+
 						if (userConfig != null) {
 							ScannerConfig scannerConfig = createScannerConfig(userConfig);
 							scanner.setConfig(scannerConfig);
@@ -456,7 +461,10 @@ public class BarcodeModule extends ReactContextBaseJavaModule implements Lifecyc
 	}
 
 	private void initBarcodeManager() {
-		barcodeManager = (BarcodeManager) emdkManager.getInstance(FEATURE_TYPE.BARCODE);
+		log("initBarcodeManager " + barcodeManager);
+		if (barcodeManager == null) {
+			barcodeManager = (BarcodeManager) emdkManager.getInstance(FEATURE_TYPE.BARCODE);
+		} 
 
 	}
 
@@ -464,11 +472,12 @@ public class BarcodeModule extends ReactContextBaseJavaModule implements Lifecyc
   		if (emdkManager != null) {
             // Release the barcodeManager which completely releases the all the associated resources
             emdkManager.release(FEATURE_TYPE.BARCODE);
+			barcodeManager = null;
         }
 	}
 
 	private void initScanner() {
-
+		log("initScanner " + scanner);
 		if (scanner == null) {
 
 			try {
@@ -494,18 +503,19 @@ public class BarcodeModule extends ReactContextBaseJavaModule implements Lifecyc
 	}
 
 	private void destroyScanner() {
-		log("destroyScanner " +scanner.isReadPending());
+		log("destroyScanner");
 		if (scanner != null) {
 
 			try{
+				destroying = true;
 				log("destroyScanner3 " + scanner);
 				scanner.release();
 			} catch (Exception e) {
 				log("Status: Error releasing scanner - " + e.getMessage());
 			}
-
+			log("destroyScanner done");
 			scanner = null;
-
+			destroying = false;
 			
 		}
 	}
