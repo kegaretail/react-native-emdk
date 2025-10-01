@@ -22,6 +22,8 @@ import com.symbol.emdk.EMDKManager.FEATURE_TYPE;
 import com.symbol.emdk.EMDKResults;
 import com.symbol.emdk.barcode.BarcodeManager;
 import com.symbol.emdk.barcode.BarcodeManager.DeviceIdentifier;
+import com.symbol.emdk.barcode.BarcodeManager.ConnectionState;
+import com.symbol.emdk.barcode.BarcodeManager.ScannerConnectionListener;
 import com.symbol.emdk.barcode.ScanDataCollection;
 import com.symbol.emdk.barcode.ScanDataCollection.ScanData;
 import com.symbol.emdk.barcode.Scanner;
@@ -62,6 +64,7 @@ public class BarcodeModule extends ReactContextBaseJavaModule implements Lifecyc
 		
 		try {
 			EMDKResults results = EMDKManager.getEMDKManager(context, this);
+			log("EMDKResults: " + results.statusCode);
 			if (results.statusCode != EMDKResults.STATUS_CODE.SUCCESS) {
 				log("Status: " + "EMDKManager object request failed!");
 			}
@@ -72,11 +75,11 @@ public class BarcodeModule extends ReactContextBaseJavaModule implements Lifecyc
     }
 
 	private ScannerConfig createScannerConfig(ReadableMap config) {
-		
+
 		try {
 
 			ScannerConfig scannerConfig = scanner.getConfig();
-	
+
 			if (config != null) {
 				
 				if (config.hasKey("triggerType")) {
@@ -190,9 +193,9 @@ public class BarcodeModule extends ReactContextBaseJavaModule implements Lifecyc
 			return scannerConfig;
 
         } catch (ScannerException e) {
-            Log.e("[BarcodeScanner]", "Read error: " + e);
+            Log.e("[BarcodeModule]", "Read error: " + e);
         } catch (NullPointerException e) {
-        	Log.e("[BarcodeScanner]", "Read error: " + e);
+        	Log.e("[BarcodeModule]", "Read error: " + e);
         }
 
 		return null;
@@ -201,11 +204,10 @@ public class BarcodeModule extends ReactContextBaseJavaModule implements Lifecyc
 	@ReactMethod
     public void read(ReadableMap config) {
 		try {
-			log("reading...");
-
-			reading = true;
+			log("reading... " + reading);
 
 			if (scanner != null) {
+				log("isReadPending " + scanner.isReadPending());
 				if (scanner.isReadPending()){
 					scanner.cancelRead();
 				}
@@ -216,21 +218,23 @@ public class BarcodeModule extends ReactContextBaseJavaModule implements Lifecyc
 					scanner.setConfig(scannerConfig);
 				}
 
+				reading = true;
+
 				scanner.read();
 
 			}
 
         } catch (ScannerException e) {
-            Log.e("[BarcodeScanner]", "Read error: " + e);
+            Log.e("[BarcodeModule]", "Read error: " + e);
         } catch (NullPointerException e) {
-        	Log.e("[BarcodeScanner]", "Read error: " + e);
+        	Log.e("[BarcodeModule]", "Read error: " + e);
         }
 
 	}
 
 	@ReactMethod
     public void release() {
-		log("cancel");
+		log("release");
 		reading = false;
 
 		if (scanner != null) {
@@ -261,36 +265,39 @@ public class BarcodeModule extends ReactContextBaseJavaModule implements Lifecyc
 
 	@ReactMethod
 	public void cancelRead() {
+		log("cancelRead");
         try {
             if(scanner != null){
                 scanner.cancelRead();
 				reading = false;
             }
         } catch (ScannerException e) {
-            Log.e("[BarcodeScanner]", "Cancel error: " + e);
+            Log.e("[BarcodeModule]", "Cancel error: " + e);
         }
     }
 
 	@ReactMethod
 	public void disable() {
+		log("disable");
         try {
             if(scanner != null){
                 scanner.disable();
 				
             }
         } catch (ScannerException e) {
-            Log.e("[BarcodeScanner]", "disable error: " + e);
+            Log.e("[BarcodeModule]", "disable error: " + e);
         }
     }
 
 	@ReactMethod
     public void enable() {
+		log("enable");
         try {
             if(scanner != null){
                 scanner.enable();
             }
         } catch (ScannerException e) {
-            Log.e("[BarcodeScanner]", "Enable error: " + e);
+            Log.e("[BarcodeModule]", "Enable error: " + e);
         }
     }
 
@@ -311,51 +318,35 @@ public class BarcodeModule extends ReactContextBaseJavaModule implements Lifecyc
 
 	@Override
 	public void onHostResume() {
-		log("onHostResume " + isScannerPresent());
-
-		if (isScannerPresent()) {
+		log("onHostResume");
+		if (emdkManager != null) {
+			initBarcodeManager();
 			initScanner();
-		} else {
-			try {
-				EMDKResults results = EMDKManager.getEMDKManager(context, this);
-				if (results.statusCode != EMDKResults.STATUS_CODE.SUCCESS) {
-					log("Status: " + "EMDKManager object request failed!");
-				}
-			} catch (Exception exception) {
-				log("Scanner is not present");
-			}
 		}
 	}
 
 	@Override
 	public void onHostPause() {
 		log("onHostPause");
-		
 		destroyScanner();
-
-		barcodeManager = null;
-		if (emdkManager != null) {
-			emdkManager.release(EMDKManager.FEATURE_TYPE.BARCODE);
-		}
+        destroyBarcodeManager();
 	}
 
 	@Override
 	public void onHostDestroy() {
 		log("onHostDestroy");
 
-		destroyScanner();
-
-		barcodeManager = null;
 		if (emdkManager != null) {
 			emdkManager.release();
 			emdkManager = null;
 		}
+	
 	}
 
 	@Override
 	public void onClosed() {
 		log("onClosed");
-		barcodeManager = null;
+
 		if (emdkManager != null) {
 			emdkManager.release();
 			emdkManager = null;
@@ -368,12 +359,11 @@ public class BarcodeModule extends ReactContextBaseJavaModule implements Lifecyc
   		log("onOpened " + emdkManager);
 		this.emdkManager = emdkManager;
 
-		initScanner();
+		initBarcodeManager();
     }
 
 	@Override
     public void onData(ScanDataCollection scanDataCollection) {
-		log("onData");
 
 		if ((scanDataCollection != null) && (scanDataCollection.getResult() == ScannerResults.SUCCESS)) {
 			ArrayList<ScanData> scanData = scanDataCollection.getScanData();
@@ -419,12 +409,12 @@ public class BarcodeModule extends ReactContextBaseJavaModule implements Lifecyc
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException e) {
-                        Log.e("[BarcodeScanner]", "onStatus error: " + e);
+                        Log.e("[BarcodeModule]", "onStatus error: " + e);
                         e.printStackTrace();
                     }
-
-                    if (scanner != null && reading){
-
+	
+                 	if (scanner != null && reading){
+	
 						if (userConfig != null) {
 							ScannerConfig scannerConfig = createScannerConfig(userConfig);
 							scanner.setConfig(scannerConfig);
@@ -432,9 +422,10 @@ public class BarcodeModule extends ReactContextBaseJavaModule implements Lifecyc
 
                         scanner.read();
                     }
+			
                     
                 } catch (ScannerException e) {
-                    Log.e("[BarcodeScanner]", "onStatus error: " + e);
+                    Log.e("[BarcodeModule]", "onStatus error: " + e);
 					e.printStackTrace();
                 }
 
@@ -464,10 +455,21 @@ public class BarcodeModule extends ReactContextBaseJavaModule implements Lifecyc
 		dispatchEvent("StatusEvent", event);
 	}
 
+	private void initBarcodeManager() {
+		barcodeManager = (BarcodeManager) emdkManager.getInstance(FEATURE_TYPE.BARCODE);
+
+	}
+
+	private void destroyBarcodeManager() {
+  		if (emdkManager != null) {
+            // Release the barcodeManager which completely releases the all the associated resources
+            emdkManager.release(FEATURE_TYPE.BARCODE);
+        }
+	}
+
 	private void initScanner() {
-		log("initScanner... "  + emdkManager);
-		if (scanner == null && emdkManager != null) {
-			barcodeManager = (BarcodeManager) emdkManager.getInstance(FEATURE_TYPE.BARCODE);
+
+		if (scanner == null) {
 
 			try {
 				scanner = barcodeManager.getDevice(DeviceIdentifier.DEFAULT);
@@ -483,6 +485,7 @@ public class BarcodeModule extends ReactContextBaseJavaModule implements Lifecyc
 					scanner.enable();
 				} catch (ScannerException e) {
 					log("Status: " + e.getMessage());
+					destroyScanner();
 				}
 			} else {
 				log("Status: " + "Failed to initialize the scanner device.");
@@ -491,28 +494,19 @@ public class BarcodeModule extends ReactContextBaseJavaModule implements Lifecyc
 	}
 
 	private void destroyScanner() {
+		log("destroyScanner " +scanner.isReadPending());
 		if (scanner != null) {
-			try {
-				scanner.cancelRead();
-				scanner.disable();
-			} catch (Exception e) {
-				log("Status: " + e.getMessage());
-			}
-
-			try {
-				scanner.removeDataListener(this);
-				scanner.removeStatusListener(this);
-			} catch (Exception e) {
-				log("Status: " + e.getMessage());
-			}
 
 			try{
+				log("destroyScanner3 " + scanner);
 				scanner.release();
 			} catch (Exception e) {
-				log("Status: " + e.getMessage());
+				log("Status: Error releasing scanner - " + e.getMessage());
 			}
 
 			scanner = null;
+
+			
 		}
 	}
 
