@@ -85,7 +85,6 @@ android {
 repositories {
     mavenCentral()
     google()
-    jcenter() // Warning: this repository is deprecated; no updates allowed
     maven {
         url = "https://zebratech.jfrog.io/artifactory/EMDK-Android/"
     }
